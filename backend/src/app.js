@@ -7,7 +7,7 @@ const app= express();
 const allowedOrigins = [
   "http://192.168.0.111:8080", // ✅ your frontend
   "http://localhost:8080", // optional: for local dev using localhost
-  "https://disaster-management-project-sepia.vercel.app/"
+  "https://disaster-management-project-sepia.vercel.app"
 ];
 
 app.use(cors({
@@ -28,6 +28,9 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}));//to parse urlencoded 
 
 app.use(cookieParser())
 app.use(express.static("public"));//to serve static files like images, css files, js files etc from public folder
+
+
+
 
 //routes import
 import userRouter from './routers/user.routes.js';
