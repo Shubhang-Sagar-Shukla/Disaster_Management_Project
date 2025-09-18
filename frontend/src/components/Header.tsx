@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertTriangle, Phone, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import  { api } from "@/lib/axios";
 export const Header = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -12,16 +12,51 @@ export const Header = () => {
   const [profilePic, setProfilePic] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/logout", {}, { withCredentials: true });
+
+      // Clear frontend localStorage
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("username");
+      localStorage.removeItem("user");
+
+      // Update header state
+      setIsLoggedIn(false);
+      setUsername("");
+      setProfilePic("");
+
+      // Redirect
+      navigate("/");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+
+
+
   // Check login state on mount
-  useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const storedUsername = localStorage.getItem("username") || "";
-    const storedProfilePic =
-      JSON.parse(localStorage.getItem("user") || "{}").profilePic || "";
-    setIsLoggedIn(loggedIn);
-    setUsername(storedUsername);
-    setProfilePic(storedProfilePic);
-  }, []);
+ useEffect(() => {
+  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const storedUsername = localStorage.getItem("username") || "";
+
+  // Safe parsing of user object
+  let storedUser: { profilePic?: string } = {};
+  try {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      storedUser = JSON.parse(userString);
+    }
+  } catch (err) {
+    console.error("Failed to parse user from localStorage", err);
+  }
+
+  setIsLoggedIn(loggedIn);
+  setUsername(storedUsername);
+  setProfilePic(storedUser.profilePic || "");
+}, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -113,7 +148,7 @@ export const Header = () => {
                         navigate("/");
                       }}
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-4 h-4" onClick={handleLogout}  />
                       Log Out
                     </button>
                   </div>

@@ -232,10 +232,17 @@ const Index = () => {
                 rescue teams and resources.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
-                <Button variant="outline" size="lg">
-                  <Zap className="mr-2 h-5 w-5" />
-                  AI Disaster Analysis
-                </Button>
+               <a
+  href="https://legal-37133.web.app"
+  target="_blank"      // opens in a new tab
+  rel="noopener noreferrer" // security best practice
+>
+  <Button variant="outline" size="lg">
+    <Zap className="mr-2 h-5 w-5" />
+    AI Disaster Analysis
+  </Button>
+</a>
+
                 <Button variant="emergency" size="lg">
                   <Phone className="mr-2 h-5 w-5" />
                   General Emergency Help

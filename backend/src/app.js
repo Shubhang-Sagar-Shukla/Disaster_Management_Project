@@ -3,12 +3,23 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app= express();
-app.use(cors(
-    {
-        origin:process.env.CORS_ORIGIN,
-        credentials:true, // allow cookies to be sent
+
+const allowedOrigins = [
+  "http://192.168.0.111:8080", // ✅ your frontend
+  "http://localhost:8080", // optional: for local dev using localhost
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin);
+    } else {
+      callback(new Error("CORS policy not allowed for this origin"));
     }
-));
+  },
+  credentials: true,
+}));
+
 
 app.use(express.json({limit:"16kb"}));//to parse json data from request body with a limit of 16kb
 

@@ -49,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log("Request Body:", req.body); // 👈 Debug line
 
   //getting user details from frontend
-  const { username, email, confirmPassword, password } = req.body
+  const { username, email, district, password } = req.body
 
 
   /* .some() tests each element of an array against a condition (callback function).
@@ -57,14 +57,14 @@ const registerUser = asyncHandler(async (req, res) => {
   true → if at least one element in the array passes the condition.
   false → if no element passes the condition.*/
 
-  if ([username, email, password, confirmPassword].some((field) => field?.trim() === "")) {
+  if ([username, email, password,district].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required")
   }
 
   // ✅ Compare password and confirmPassword
-  if (password !== confirmPassword) {
-    throw new ApiError(400, "Password and Confirm Password do not match");
-  }
+  // if (password !== confirmPassword) {
+  //   throw new ApiError(400, "Password and Confirm Password do not match");
+  // }
 
 
   // checking if user already exists

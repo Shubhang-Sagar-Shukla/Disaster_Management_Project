@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "@/lib/axios";
+
 
 function Login() {
   const [identifier, setIdentifier] = useState(""); // username or email
@@ -7,30 +9,40 @@ function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  try {
+    const res = await api.post("/login", {
+      email: identifier,
+      password,
+    });
 
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    console.log("✅ Login success:", res.data);
 
-    if (
-      (identifier === storedUser.username || identifier === storedUser.email) &&
-      password === storedUser.password
-    ) {
-      setError("");
-      setSuccess("Login successful!");
+    setError("");
+    setSuccess("Login successful!");
 
-      // Store login state in localStorage
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", storedUser.username); // optional, for profile display
+    // Safely get the user object
+    const user = res.data.user || res.data.data || res.data; // fallback options
 
-      // Redirect to main site after short delay
-      setTimeout(() => navigate("/"), 1000);
-    } else {
-      setSuccess("");
-      setError("Invalid email or password");
-    }
-  };
+    // Store in localStorage
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("username", user.username || "");
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Trigger header update
+    window.dispatchEvent(new Event("storage"));
+
+    setTimeout(() => navigate("/"), 1000);
+  } catch (err: any) {
+    console.error("❌ Login error:", err);
+    setSuccess("");
+    setError(err.response?.data?.message || "Invalid email or password");
+  }
+};
+
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-blue-100">
