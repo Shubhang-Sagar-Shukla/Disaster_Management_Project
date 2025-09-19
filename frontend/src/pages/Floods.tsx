@@ -6,11 +6,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CloudRain, Umbrella, AlertTriangle, Phone } from "lucide-react";
+import { Header } from "@/components/Header"; 
 
 const Floods = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-10 px-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white  px-6">
+      <Header />
+
+      <div className="max-w-4xl py-10 mx-auto">
         {/* Header */}
         <h1 className="text-4xl font-bold text-center mb-6 text-blue-600">
           🌊 Floods & Safety Training

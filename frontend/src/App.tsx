@@ -17,6 +17,8 @@ import Floods from "./pages/Floods";
 import TerroristAttacks from "./pages/TerroristAttacks"; // NEW
 import LocalAlerts from "./components/LocalAlerts";
 import AlertsPage from "./pages/AlertsPage"
+import ReportEmergency from "./pages/ReportEmergency";
+import EmergencyContacts from "./pages/EmergencyContacts";
 
 const queryClient = new QueryClient();
 
@@ -62,8 +64,9 @@ const App = () => (
             element={<TerroristAttacks />}
           />
           <Route path="/local-alerts" element={<LocalAlerts />} />
-          <Route path="/region-alerts" element={<AlertsPage/> }/>
-
+          <Route path="/region-alerts" element={<AlertsPage />} />
+          <Route path="/report-emergency" element={<ReportEmergency />} />
+          <Route path="/emergency-contacts" element={<EmergencyContacts />} />
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>

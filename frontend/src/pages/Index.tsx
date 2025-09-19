@@ -3,6 +3,10 @@ import { Header } from "@/components/Header";
 import { DisasterCard } from "@/components/DisasterCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import heroImage from "@/assets/hero-disaster-management.jpg";
+import "leaflet/dist/leaflet.css";
+
+// ✅ Correct Lucide imports (default imports)
 import {
   Waves,
   Mountain,
@@ -17,7 +21,6 @@ import {
   MapPin,
   Wifi,
 } from "lucide-react";
-import heroImage from "@/assets/hero-disaster-management.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -29,6 +32,8 @@ const Index = () => {
       description:
         "Learn about flood preparedness, evacuation routes, and emergency response.",
       severity: "high" as const,
+      emergencyNumber: "112",
+      url: "https://ndma.gov.in/index.php/Natural-Hazards/Floods/Do-Donts",
     },
     {
       icon: Waves,
@@ -36,6 +41,8 @@ const Index = () => {
       description:
         "Critical information for coastal areas and tsunami warning systems.",
       severity: "high" as const,
+      emergencyNumber: "112",
+      url: "https://ndma.gov.in/Natural-Hazards/Tsunami/Dos-Donts",
     },
     {
       icon: Mountain,
@@ -43,6 +50,8 @@ const Index = () => {
       description:
         "Earthquake safety protocols, structural safety, and emergency kits.",
       severity: "high" as const,
+      emergencyNumber: "112",
+      url: "https://ndma.gov.in/Natural-Hazards/Earthquakes/Dos-Donts",
     },
     {
       icon: Flame,
@@ -50,6 +59,8 @@ const Index = () => {
       description:
         "Fire prevention, evacuation procedures, and firefighting basics.",
       severity: "medium" as const,
+      emergencyNumber: "112",
+      url: "https://megfireservice.gov.in/fire_safety.html",
     },
     {
       icon: Shield,
@@ -57,12 +68,16 @@ const Index = () => {
       description:
         "Security protocols, threat awareness, and emergency response.",
       severity: "high" as const,
+      emergencyNumber: "112",
+      url: "https://example.com/terrorist-attack",
     },
     {
       icon: Wind,
       title: "Hurricane",
       description: "Hurricane tracking, preparation, and shelter information.",
       severity: "medium" as const,
+      emergencyNumber: "112",
+      url: "https://www.dtn.com/hurricane-disaster-dos-and-donts/",
     },
   ];
 
@@ -79,7 +94,7 @@ const Index = () => {
       title: "Region Alerts",
       description: "Map-based alerts and notifications",
       variant: "warning" as const,
-      onAccess: () =>navigate("/region-alerts")
+      onAccess: () => navigate("/region-alerts"),
     },
     {
       icon: Users,
@@ -93,7 +108,7 @@ const Index = () => {
       title: "Emergency Contacts",
       description: "Hospitals, rescue teams, and resources",
       variant: "emergency" as const,
-      onAccess: () => console.log("Emergency Contacts clicked"),
+      onAccess: () => navigate("/emergency-contacts"),
     },
   ];
 
@@ -117,7 +132,11 @@ const Index = () => {
             Your comprehensive disaster management and emergency response system
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" variant="emergency">
+            <Button
+              size="lg"
+              variant="emergency"
+              onClick={() => navigate("/report-emergency")}
+            >
               <AlertTriangle className="mr-2 h-5 w-5" />
               Report Emergency
             </Button>
@@ -125,7 +144,7 @@ const Index = () => {
               size="lg"
               variant="outline"
               className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-              onClick={() => navigate("/local-alerts")} // ✅ Only here
+              onClick={() => navigate("/local-alerts")}
             >
               <MapPin className="mr-2 h-5 w-5" />
               Check Local Alerts
@@ -139,7 +158,7 @@ const Index = () => {
         <div className="container mx-auto flex items-center gap-3">
           <Wifi className="h-5 w-5 text-info" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-info-foreground">
+            <p className="text-sm text-black font-medium">
               Low Network Mode Available
             </p>
             <p className="text-xs text-muted-foreground">
@@ -167,12 +186,12 @@ const Index = () => {
                   <div
                     className={`inline-flex p-4 rounded-full mb-4 ${
                       action.variant === "emergency"
-                        ? "bg-emergency/10 text-emergency"
+                        ? "bg-red-100 text-red-600"
                         : action.variant === "warning"
-                        ? "bg-warning/10 text-warning"
+                        ? "bg-yellow-100 text-yellow-600"
                         : action.variant === "safety"
-                        ? "bg-safety/10 text-safety"
-                        : "bg-info/10 text-info"
+                        ? "bg-green-100 text-green-600"
+                        : "bg-blue-100 text-blue-600"
                     }`}
                   >
                     <action.icon className="h-8 w-8" />
@@ -208,12 +227,7 @@ const Index = () => {
                 title={disaster.title}
                 description={disaster.description}
                 severity={disaster.severity}
-                onLearnMore={() =>
-                  console.log(`Learning about ${disaster.title}`)
-                }
-                onEmergency={() =>
-                  console.log(`Emergency help for ${disaster.title}`)
-                }
+                onLearnMore={() => window.open(disaster.url, "_blank")}
               />
             ))}
           </div>
@@ -232,18 +246,22 @@ const Index = () => {
                 rescue teams and resources.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
-               <a
-  href="https://legal-37133.web.app"
-  target="_blank"      // opens in a new tab
-  rel="noopener noreferrer" // security best practice
->
-  <Button variant="outline" size="lg">
-    <Zap className="mr-2 h-5 w-5" />
-    AI Disaster Analysis
-  </Button>
-</a>
+                <a
+                  href="https://legal-37133.web.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg">
+                    <Zap className="mr-2 h-5 w-5" />
+                    AI Disaster Analysis
+                  </Button>
+                </a>
 
-                <Button variant="emergency" size="lg">
+                <Button
+                  variant="emergency"
+                  size="lg"
+                  onClick={() => window.open("tel:112")}
+                >
                   <Phone className="mr-2 h-5 w-5" />
                   General Emergency Help
                 </Button>

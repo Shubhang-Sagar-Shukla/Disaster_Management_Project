@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, Phone, LogOut } from "lucide-react";
+import { Shield, AlertTriangle, Phone, LogOut, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import  { api } from "@/lib/axios";
+import { api } from "@/lib/axios";
+import customLogo from "@/assets/recovery.png";
+
 export const Header = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,85 +12,74 @@ export const Header = () => {
   const [dropdownAnimating, setDropdownAnimating] = useState(false);
   const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [showToast, setShowToast] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
 
   const handleLogout = async () => {
     try {
       await api.post("/logout", {}, { withCredentials: true });
-
-      // Clear frontend localStorage
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user");
-
-      // Update header state
+      localStorage.clear();
       setIsLoggedIn(false);
       setUsername("");
       setProfilePic("");
-
-      // Redirect
       navigate("/");
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error(err);
     }
   };
 
-
-
-
-  // Check login state on mount
- useEffect(() => {
-  const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const storedUsername = localStorage.getItem("username") || "";
-
-  // Safe parsing of user object
-  let storedUser: { profilePic?: string } = {};
-  try {
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      storedUser = JSON.parse(userString);
-    }
-  } catch (err) {
-    console.error("Failed to parse user from localStorage", err);
-  }
-
-  setIsLoggedIn(loggedIn);
-  setUsername(storedUsername);
-  setProfilePic(storedUser.profilePic || "");
-}, []);
-
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+    setUsername(localStorage.getItem("username") || "");
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      setProfilePic(storedUser.profilePic || "");
+    } catch {}
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(e.target as Node)
       ) {
         if (showDropdown) {
           setDropdownAnimating(true);
           setTimeout(() => {
             setShowDropdown(false);
             setDropdownAnimating(false);
-          }, 250); // matches fade-out animation duration
+          }, 250);
         }
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showDropdown]);
 
+  // Emergency: 112
+  const handleEmergencyClick = () => {
+    if (window.innerWidth <= 768) {
+      window.location.href = "tel:112";
+    } else {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 5000); // hide after 5 seconds
+    }
+  };
+
   return (
-    <header className="bg-background/95 backdrop-blur-sm border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          {/* Left side: logo and site name */}
+    <>
+      <header className="bg-background/95 backdrop-blur-sm border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
-              <Shield className="h-8 w-8 text-primary" />
+              <img
+                src={customLogo}
+                alt="SafeGuard Logo"
+                className="h-8 w-8 object-contain"
+              />
             </div>
             <div>
               <h1 className="font-bold text-xl text-foreground">SafeGuard</h1>
@@ -98,13 +89,12 @@ export const Header = () => {
             </div>
           </div>
 
-          {/* Right side: buttons including Sign Up / Profile */}
+          {/* Right side */}
           <div className="flex items-center gap-3">
             {!isLoggedIn ? (
               <Button
                 variant="default"
                 size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-800 hover:opacity-90 shadow-md"
                 onClick={() => navigate("/signup")}
               >
                 Sign Up
@@ -120,93 +110,75 @@ export const Header = () => {
                   />
                 ) : (
                   <div
-                    onClick={() => setShowDropdown(!showDropdown)}
                     className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold cursor-pointer"
+                    onClick={() => setShowDropdown(!showDropdown)}
                   >
                     {username.charAt(0).toUpperCase()}
                   </div>
                 )}
                 {(showDropdown || dropdownAnimating) && (
                   <div
-                    className={`absolute right-0 mt-2 w-40 bg-white shadow-lg rounded origin-top-right ${
+                    className={`absolute right-0 mt-2 w-40 bg-white shadow-lg rounded ${
                       dropdownAnimating
                         ? "animate-dropdown-fade-out"
                         : "animate-dropdown-fade-in"
                     }`}
                   >
                     <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
                       onClick={() => navigate("/profile")}
                     >
                       View Profile
                     </button>
                     <button
                       className="w-full text-left px-4 py-2 flex items-center gap-2 hover:bg-gray-100 text-red-600"
-                      onClick={() => {
-                        localStorage.clear();
-                        setIsLoggedIn(false);
-                        navigate("/");
-                      }}
+                      onClick={handleLogout}
                     >
-                      <LogOut className="w-4 h-4" onClick={handleLogout}  />
-                      Log Out
+                      <LogOut className="w-4 h-4" /> Log Out
                     </button>
                   </div>
                 )}
               </div>
             )}
 
-            <Button variant="warning" size="sm" className="hidden md:flex">
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              Active Alerts
+            <Button
+              variant="warning"
+              size="sm"
+              className="hidden md:flex"
+              onClick={() => navigate("/region-alerts")}
+            >
+              <AlertTriangle className="h-4 w-4 mr-2" /> Active Alerts
             </Button>
-            <Button variant="emergency" size="sm">
-              <Phone className="h-4 w-4 mr-2" />
-              Emergency: 911
+
+            <Button
+              variant="emergency"
+              size="sm"
+              onClick={handleEmergencyClick}
+            >
+              <Phone className="h-4 w-4 mr-2" /> Emergency: 112
             </Button>
           </div>
         </div>
+      </header>
 
-        {/* Navigation links */}
-        <nav className="mt-4 flex gap-6 text-sm">
-          <a
-            href="#dashboard"
-            className="text-foreground hover:text-primary transition-colors"
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-8 right-8 bg-red-600 text-white p-4 rounded-lg shadow-xl flex items-start gap-3 max-w-sm w-full animate-fade-in">
+          <Phone className="w-5 h-5 mt-1" />
+          <div className="flex-1">
+            <p className="font-semibold">Emergency Call</p>
+            <p className="text-sm">
+              Please dial 112 immediately for emergencies.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowToast(false)}
+            className="text-white hover:text-gray-200"
           >
-            Dashboard
-          </a>
-          <a
-            href="#learning"
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
-            Learning
-          </a>
-          <a
-            href="#alerts"
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
-            Alerts
-          </a>
-          <a
-            href="#drills"
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
-            Virtual Drills
-          </a>
-          <a
-            href="#contacts"
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
-            Emergency Contacts
-          </a>
-          <a
-            href="#other"
-            className="text-muted-foreground hover:text-primary transition-colors"
-          >
-            Other Help
-          </a>
-        </nav>
-      </div>
-    </header>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </>
   );
 };

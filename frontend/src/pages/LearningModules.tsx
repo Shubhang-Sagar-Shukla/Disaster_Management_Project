@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/Header"; 
 
 const dummyModules = [
   {
@@ -45,7 +46,9 @@ function LearningModules() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-blue-50 p-8">
+    <div className="min-h-screen bg-blue-50">
+      <Header />
+       <main className="p-8">
       <h2 className="text-3xl font-bold text-black text-center mb-8">
         Learning Modules
       </h2>
@@ -73,6 +76,7 @@ function LearningModules() {
           </div>
         ))}
       </div>
+      </main>
     </div>
   );
 }

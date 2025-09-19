@@ -6,11 +6,13 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { AlertTriangle, Users, Package, Shield } from "lucide-react";
+import { Header } from "@/components/Header"; // ✅ Import Header
 
 const DisasterPreparedness = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-8 lg:px-16">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-8 lg:px-16">
+      <Header /> {/* ✅ Header added */}
+      <div className="max-w-4xl py-10 mx-auto">
         {/* Page Title */}
         <Card className="mb-8 shadow-lg">
           <CardHeader>
