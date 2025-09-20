@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-
+const app = express();
 const allowedOrigins = [
   "http://localhost:8080",
   "https://disaster-management-project-sepia.vercel.app"
