@@ -164,24 +164,29 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  if (!req.user || !req.user._id) {
-    return res.status(401).json({ error: "User not authenticated" });
-  }
-
   await User.findByIdAndUpdate(
     req.user._id,
-    { $set: { refreshToken: undefined } },
-    { new: true }
-  );
+    {
+      $set: {
+        refreshToken: undefined
+      }
+    },
+    {
+      new: true
+    }
 
-  const cookieOptions = { httpOnly: true, secure: true };
+  )
 
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+  }
   return res
     .status(200)
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions)
-    .json(new apiResponse(200, {}, "User logged out successfully"));
-});
+    .json(new apiResponse(200, {}, "User logged out successfully"))
+})
 
 export {
   registerUser,
