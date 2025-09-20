@@ -164,18 +164,16 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: {
-        refreshToken: undefined
-      }
-    },
-    {
-      new: true
-    }
+ if (!req.user || !req.user._id) {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  return res.status(200).json({ message: "Already logged out" });
+}
 
-  )
+await User.findByIdAndUpdate(req.user._id, {
+  $set: { refreshToken: undefined }
+}, { new: true });
+
 
   const cookieOptions = {
     httpOnly: true,
