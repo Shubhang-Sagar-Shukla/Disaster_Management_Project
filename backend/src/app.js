@@ -3,35 +3,23 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app = express();
+
 const allowedOrigins = [
+  "http://192.168.0.111:8080",
   "http://localhost:8080",
   "https://disaster-management-project-sepia.vercel.app"
 ];
 
+// CORS middleware for all routes
 app.use(cors({
-  origin: function(origin, callback) {
-    // allow non-browser requests (like Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("CORS policy not allowed for this origin"));
-    }
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error("CORS policy not allowed for this origin"));
   },
-  credentials: true,  // must be true for cookies
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
 }));
-
-// handle preflight OPTIONS requests globally
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
-}));
-
 
 // Middleware
 app.use(express.json({ limit: "16kb" }));
