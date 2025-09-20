@@ -164,6 +164,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
+
+    console.log("🔎 req.user at logout:", req.user);
  if (!req.user || !req.user._id) {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
